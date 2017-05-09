@@ -1,8 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
+import { Actions } from 'jumpstate'
 
 class ListScreen extends React.Component {
+  componentDidMount () {
+    Actions.listGists()
+  }
   render () {
     return (<div>
       {this.props.gists.map((item, i) => (
