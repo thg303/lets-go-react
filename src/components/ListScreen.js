@@ -1,9 +1,24 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router'
 
 class ListScreen extends React.Component {
   render () {
-    return (<div>todo: list of gists</div>)
+    return (<div>
+      {this.props.gists.map((item, i) => (
+        <div key={i}>
+          <Link to={`/gist/${item.id}`}>{item.id}</Link>
+          <p>created at <italic>{item.created_at}</italic></p>
+        </div>
+      ))}
+    </div>)
   }
 }
 
-export default ListScreen
+function mapStateToProps (state) {
+  return {
+    gists: state.gist.list
+  }
+}
+
+export default connect(mapStateToProps)(ListScreen)
