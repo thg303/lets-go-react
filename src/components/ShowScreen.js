@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Actions } from 'jumpstate'
+import { Helmet } from 'react-helmet'
 
 class ShowScreen extends React.Component {
   constructor (props) {
@@ -30,6 +31,7 @@ class ShowScreen extends React.Component {
     return (
       <div>
         {!this.state.isLoading && <div>
+          <Helmet><title>{gist.description ? gist.description : 'gist details'}</title></Helmet>
           <h2>{gist.description ? gist.description : ' - '}</h2>
           <img src={gist.owner && gist.owner.avatar_url ? gist.owner.avatar_url : 'https://assets-cdn.github.com/images/gravatars/gravatar-user-420.png'} />
         </div>}

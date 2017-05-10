@@ -20,6 +20,8 @@ const { createStore, applyMiddleware, compose } = require('redux')
 const { CreateJumpstateMiddleware } = require('jumpstate')
 const rootReducer = require('../src/rootReducer').default
 
+const { Helmet } = require('react-helmet')
+
 const { createLocation } = require('history')
 const routes = require('../src/routes').default
 
@@ -75,6 +77,8 @@ app.get('*', function (req, res) {
           const wrappedApp = React.createElement(Provider, {store: store}, reactApp)
           var renderedApp = htmlData.replace('<var id="SSR"></var>', ReactDOMServer.renderToString(wrappedApp))
           renderedApp = renderedApp.replace('/*__REDUX_STATE__*/', `window.__REDUX_STATE__ = ${JSON.stringify(store.getState())}`)
+          const helmet = Helmet.renderStatic()
+          renderedApp = renderedApp.replace('<var id="headers"></var>', helmet.title.toString())
           res.status(200).send(renderedApp)
         })
       }).catch((e) => showError(e))
