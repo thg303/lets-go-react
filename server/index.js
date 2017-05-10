@@ -64,13 +64,20 @@ app.get('*', function (req, res) {
     if (ssrData) {
       const reactApp = React.createElement(ReactRouter.RouterContext, ssrData)
 
-      const htmlPath = path.join(__dirname, '../build', 'index.html')
-      fs.readFile(htmlPath, 'utf-8', (err, htmlData) => {
-        if (err) { return showError(Error('no html file found')) }
-        const wrappedApp = React.createElement(Provider, {store: store}, reactApp)
-        const renderedApp = htmlData.replace('<var id="SSR"></var>', ReactDOMServer.renderToString(wrappedApp))
-        res.status(200).send(renderedApp)
-      })
+      const {components, location, params, history} = ssrData
+      const Comp = components[components.length - 1]
+      const fetchData = (Comp && Comp.fetchData) || (() => Promise.resolve())
+
+      fetchData({store, location, params, history}).then(() => {
+        const htmlPath = path.join(__dirname, '../build', 'index.html')
+        fs.readFile(htmlPath, 'utf-8', (err, htmlData) => {
+          if (err) { return showError(Error('no html file found')) }
+          const wrappedApp = React.createElement(Provider, {store: store}, reactApp)
+          var renderedApp = htmlData.replace('<var id="SSR"></var>', ReactDOMServer.renderToString(wrappedApp))
+          renderedApp = renderedApp.replace('/*__REDUX_STATE__*/', `window.__REDUX_STATE__ = ${JSON.stringify(store.getState())}`)
+          res.status(200).send(renderedApp)
+        })
+      }).catch((e) => showError(e))
     } else {
       return showError(Error('no page found'))
     }

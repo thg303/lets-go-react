@@ -8,7 +8,7 @@ import rootReducer from './rootReducer'
 import routes from './routes'
 import './index.css'
 
-const initialState = {}
+const initialState = window.__REDUX_STATE__ || {}
 
 const store = createStore(
   rootReducer,

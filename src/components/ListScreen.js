@@ -19,6 +19,10 @@ class ListScreen extends React.Component {
   }
 }
 
+ListScreen.fetchData = () => {
+  return Actions.listGists()
+}
+
 function mapStateToProps (state) {
   return {
     gists: state.gist.list
