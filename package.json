@@ -23,7 +23,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build:client": "react-scripts build",
+    "build:server": "webpack --config ./server/webpack.config.js",
+    "build": "npm run build:client && npm run build:server",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

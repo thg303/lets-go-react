@@ -1,12 +1,3 @@
-require('babel-register')(
-  {
-    presets: ['es2015', 'react', 'stage-2'],
-    plugins: [
-      ['babel-plugin-transform-require-ignore', { extensions: ['.svg', '.css'] }]
-    ]
-  }
-)
-
 const http = require('http')
 const path = require('path')
 const express = require('express')
@@ -42,7 +33,7 @@ app.use(express.static('../build'))
 staticFiles.forEach((file) => {
   app.get(file, (req, res) => {
     const filePath = path.join(__dirname, '../build', req.url)
-    res.sendFile(filePath)
+    res.sendFile(filePath, {root: `${__dirname}/..`})
   })
 })
 
