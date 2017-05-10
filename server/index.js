@@ -15,6 +15,11 @@ const ReactRouter = require('react-router')
 const ReactDOMServer = require('react-dom/server')
 const fs = require('fs')
 
+const { Provider } = require('react-redux')
+const { createStore, applyMiddleware, compose } = require('redux')
+const { CreateJumpstateMiddleware } = require('jumpstate')
+const rootReducer = require('../src/rootReducer').default
+
 const { createLocation } = require('history')
 const routes = require('../src/routes').default
 
@@ -39,6 +44,12 @@ staticFiles.forEach((file) => {
   })
 })
 
+const store = createStore(
+  rootReducer,
+  {},
+  compose(applyMiddleware(CreateJumpstateMiddleware()))
+)
+
 app.get('*', function (req, res) {
   const aLocation = createLocation(req.url)
   const showError = (e = {}) => res.status(404).send(`404: ${e.message ? e.message : 'wrong url'}`)
@@ -56,7 +67,8 @@ app.get('*', function (req, res) {
       const htmlPath = path.join(__dirname, '../build', 'index.html')
       fs.readFile(htmlPath, 'utf-8', (err, htmlData) => {
         if (err) { return showError(Error('no html file found')) }
-        const renderedApp = htmlData.replace('<var id="SSR"></var>', ReactDOMServer.renderToString(reactApp))
+        const wrappedApp = React.createElement(Provider, {store: store}, reactApp)
+        const renderedApp = htmlData.replace('<var id="SSR"></var>', ReactDOMServer.renderToString(wrappedApp))
         res.status(200).send(renderedApp)
       })
     } else {
