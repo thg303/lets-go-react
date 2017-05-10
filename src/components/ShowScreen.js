@@ -8,11 +8,22 @@ class ShowScreen extends React.Component {
     this.state = {
       isLoading: true
     }
+    this.loadGist = this.loadGist.bind(this)
   }
-  componentDidMount () {
-    Actions.loadGist(this.props.params.id).then(() => {
+  loadGist () {
+    this.setState({isLoading: true})
+    Actions.loadGist(this.props.params.id).then((res) => {
       this.setState({isLoading: false})
     })
+  }
+  componentWillMount () {
+    if (this.props.gist === null) {
+      return this.loadGist()
+    }
+    if (this.props.gist.id !== this.props.params.id) {
+      return this.loadGist()
+    }
+    this.setState({isLoading: false})
   }
   render () {
     const {gist} = this.props
@@ -25,6 +36,10 @@ class ShowScreen extends React.Component {
       </div>
     )
   }
+}
+
+ShowScreen.fetchData = ({params}) => {
+  return Actions.loadGist(params.id)
 }
 
 function mapStateToProps (state) {
